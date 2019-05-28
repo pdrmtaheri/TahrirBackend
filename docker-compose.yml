@@ -11,7 +11,7 @@ services:
     links:
       - postgres:postgres
     volumes:
-    - .:/opt/jarchi
+    - .:/opt/tahrir
     restart: unless-stopped
   nginx:
     image: nginx:1.16

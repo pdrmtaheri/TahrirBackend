@@ -37,4 +37,4 @@ class Comment(models.Model):
     translation_ct = models.ForeignKey(ContentType, limit_choices_to=(EnToFaTranslation, FaToEnTranslation),
                                        on_delete=models.CASCADE)
     translation_obj_id = models.PositiveIntegerField()
-    content_object = GenericForeignKey('translation_ct', 'translation_obj')
+    content_object = GenericForeignKey('translation_ct', 'translation_obj_id')

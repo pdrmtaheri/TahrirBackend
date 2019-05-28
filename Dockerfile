@@ -7,5 +7,5 @@ RUN pip install -r requirements.txt
 
 ADD . .
 
-EXPOSE 5555
+EXPOSE 55555
 ENTRYPOINT ["./docker-entrypoint.sh"]

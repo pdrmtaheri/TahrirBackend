@@ -1,0 +1,25 @@
+version: '3'
+services:
+  tahrir:
+    build:
+      context: .
+      dockerfile: './Dockerfile'
+    ports:
+      - "55555:55555"
+    depends_on:
+      - postgres
+      - nginx
+    links:
+      - postgres:postgres
+    volumes:
+    - .:/opt/jarchi
+    restart: unless-stopped
+  nginx:
+    image: nginx:1.16
+    links: tahrir:tahrir
+    restart: unless-stopped
+  postgres:
+    image: postgres:11
+    restart: unless-stopped
+    volumes:
+      -  ./volumes/postgres/data:/var/lib/postgresql/data

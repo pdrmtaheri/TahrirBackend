@@ -77,7 +77,7 @@ WSGI_APPLICATION = 'TahrirBackend.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'main',
+        'NAME': 'postgres',
         'USER': 'postgres',
         'HOST': 'postgres',
         'PORT': '5432',

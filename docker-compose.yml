@@ -8,7 +8,6 @@ services:
       - "55555:55555"
     depends_on:
       - postgres
-      - nginx
     links:
       - postgres:postgres
     volumes:
@@ -16,7 +15,8 @@ services:
     restart: unless-stopped
   nginx:
     image: nginx:1.16
-    links: tahrir:tahrir
+    links:
+      - tahrir:tahrir
     restart: unless-stopped
   postgres:
     image: postgres:11

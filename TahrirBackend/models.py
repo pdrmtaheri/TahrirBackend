@@ -5,11 +5,11 @@ from django.db import models
 
 
 class PersianWord(models.Model):
-    word = models.CharField(max_length=50)
+    word = models.CharField(max_length=50, unique=True)
 
 
 class EnglishWord(models.Model):
-    word = models.CharField(max_length=50)
+    word = models.CharField(max_length=50, unique=True)
 
 
 class Comment(models.Model):
@@ -20,24 +20,30 @@ class Comment(models.Model):
 
     translation_ct = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     translation_obj_id = models.PositiveIntegerField()
-    content_object = GenericForeignKey('translation_ct', 'translation_obj_id')
+    translation = GenericForeignKey('translation_ct', 'translation_obj_id')
 
 
 class FaToEnTranslation(models.Model):
-    source = models.ForeignKey(PersianWord, on_delete=models.CASCADE)
-    destination = models.ForeignKey(EnglishWord, on_delete=models.CASCADE)
+    word = models.ForeignKey(PersianWord, on_delete=models.CASCADE)
+    translation = models.ForeignKey(EnglishWord, on_delete=models.CASCADE)
 
     verified = models.BooleanField(default=False)
     submitter_name = models.CharField(max_length=50)
 
     comments = GenericRelation(Comment)
+
+    class Meta:
+        unique_together = ('word', 'translation')
 
 
 class EnToFaTranslation(models.Model):
-    source = models.ForeignKey(EnglishWord, on_delete=models.CASCADE)
-    destination = models.ForeignKey(PersianWord, on_delete=models.CASCADE)
+    word = models.ForeignKey(EnglishWord, on_delete=models.CASCADE)
+    translation = models.ForeignKey(PersianWord, on_delete=models.CASCADE)
 
     verified = models.BooleanField(default=False)
     submitter_name = models.CharField(max_length=50)
 
     comments = GenericRelation(Comment)
+
+    class Meta:
+        unique_together = ('word', 'translation')

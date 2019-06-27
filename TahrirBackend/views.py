@@ -1,13 +1,13 @@
-from django.http import JsonResponse, HttpResponseNotFound
+from django.http import JsonResponse, HttpResponseNotFound, HttpResponseBadRequest, HttpResponse
 from django.views.decorators.http import require_GET, require_POST
 
-from TahrirBackend.models import EnToFaTranslation, FaToEnTranslation
+from TahrirBackend.models import EnToFaTranslation, FaToEnTranslation, Comment
 
 
 def _build_translation_response(translations):
     return [
         {
-            'word': t.destination,
+            'translation': t.translation,
             'rating': t.rating,
             'comments': [
                 {
@@ -22,20 +22,18 @@ def _build_translation_response(translations):
 
 
 @require_GET
-def translate_en(request):
-    term = request.GET['term']
-    translations = EnToFaTranslation.objects.filter(source__word__contains=term, verified=True)
-    if len(translations) == 0:
-        return HttpResponseNotFound()
+def translate(request):
+    word, lang = request.GET.get('word'), request.GET.get('lang')
+    if not word or not lang:
+        return HttpResponseBadRequest()
 
-    response = _build_translation_response(translations)
-    return JsonResponse(response)
+    if lang == 'en':
+        translations = EnToFaTranslation.objects.filter(word__word=word, verified=True)
+    elif lang == 'fa':
+        translations = FaToEnTranslation.objects.filter(word__word=word, verified=True)
+    else:
+        return HttpResponseBadRequest()
 
-
-@require_GET
-def translate_fa(request):
-    term = request.GET['term']
-    translations = FaToEnTranslation.objects.filter(source__word__contains=term)
     if len(translations) == 0:
         return HttpResponseNotFound()
 
@@ -44,15 +42,42 @@ def translate_fa(request):
 
 
 @require_POST
-def create_translation_fa(request):
-    return None
+def create_translation(request):
+    word, translation, lang = request.POST.get('word'), request.POST.get('translation'), request.POST.get('lang')
+    if not word or not translation or not lang:
+        return HttpResponseBadRequest()
 
+    submitter_name = request.POST.get('name')
+    if lang == 'en':
+        EnToFaTranslation.objects.create(word=word, translation=translation, submitter_name=submitter_name)
+    elif lang == 'fa':
+        FaToEnTranslation.objects.create(word=word, translation=translation, submitter_name=submitter_name)
+    else:
+        return HttpResponseBadRequest()
 
-@require_POST
-def create_translation_en(request):
-    return None
+    return HttpResponse('Comment successfully created')
 
 
 @require_POST
 def create_comment(request):
-    return None
+    word, translation, lang = request.POST.get('word'), request.POST.get('translation'), request.POST.get('lang')
+    if not word or not translation or not lang:
+        return HttpResponseBadRequest()
+
+    try:
+        if lang == 'en':
+            translation = EnToFaTranslation.objects.get(word=word, translation=translation)
+        elif lang == 'fa':
+            translation = FaToEnTranslation.objects.get(word=word, translation=translation)
+        else:
+            return HttpResponseBadRequest()
+    except (EnToFaTranslation.DoesNotExist, FaToEnTranslation.DoesNotExist):
+        return HttpResponseBadRequest()
+
+    name, comment, rating = request.POST.get('name'), request.POST.get('comment'), require_POST.get('rating')
+    if not name or not comment or not rating:
+        return HttpResponseBadRequest()
+
+    Comment.objects.create(translation=translation, submitter_name=name, comment=comment, rating=rating)
+
+    return HttpResponse('Comment successfully created')

@@ -21,7 +21,7 @@ from TahrirBackend import views
 urlpatterns = [
     path('admin/', admin.site.urls),
 
-    path('translation/get', views.translate),
+    path('translation/get', views.get_translation),
 
     path('translation/create', views.create_translation),
 

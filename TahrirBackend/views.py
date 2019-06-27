@@ -22,7 +22,7 @@ def _build_translation_response(translations):
 
 
 @require_GET
-def translate(request):
+def get_translation(request):
     word, lang = request.GET.get('word'), request.GET.get('lang')
     if not word or not lang:
         return HttpResponseBadRequest()

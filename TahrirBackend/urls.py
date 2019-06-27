@@ -16,6 +16,16 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
+from TahrirBackend import views
+
 urlpatterns = [
     path('admin/', admin.site.urls),
+
+    path('translation/fa/get', views.translate_fa),
+    path('translation/en/get', views.translate_en),
+
+    path('translation/fa/create', views.create_translation_fa),
+    path('translation/en/create', views.create_translation_en),
+
+    path('comment/create', views.create_comment)
 ]

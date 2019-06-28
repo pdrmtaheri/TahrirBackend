@@ -28,6 +28,7 @@ def get_translation(request):
         return HttpResponseBadRequest('Parameters "word" and "lang" not provided correctly')
 
     if lang == 'en':
+        word = word.lower()
         translations = EnToFaTranslation.objects.filter(word__word=word, verified=True)
     elif lang == 'fa':
         translations = FaToEnTranslation.objects.filter(word__word=word, verified=True)

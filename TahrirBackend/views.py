@@ -25,17 +25,17 @@ def _build_translation_response(translations):
 def get_translation(request):
     word, lang = request.GET.get('word'), request.GET.get('lang')
     if not word or not lang:
-        return HttpResponseBadRequest()
+        return HttpResponseBadRequest('Parameters "word" and "lang" not provided correctly')
 
     if lang == 'en':
         translations = EnToFaTranslation.objects.filter(word__word=word, verified=True)
     elif lang == 'fa':
         translations = FaToEnTranslation.objects.filter(word__word=word, verified=True)
     else:
-        return HttpResponseBadRequest()
+        return HttpResponseBadRequest('Invalid "lang" param')
 
     if len(translations) == 0:
-        return HttpResponseNotFound()
+        return HttpResponseNotFound('Translation not found')
 
     response = _build_translation_response(translations)
     return JsonResponse(response, status=200)
@@ -45,7 +45,7 @@ def get_translation(request):
 def create_translation(request):
     word, translation, lang = request.POST.get('word'), request.POST.get('translation'), request.POST.get('lang')
     if not word or not translation or not lang:
-        return HttpResponseBadRequest()
+        return HttpResponseBadRequest('Parameters "word", "translation" and "lang" not provided correctly')
 
     submitter_name = request.POST.get('name')
     if lang == 'en':
@@ -53,7 +53,7 @@ def create_translation(request):
     elif lang == 'fa':
         FaToEnTranslation.objects.create(word=word, translation=translation, submitter_name=submitter_name)
     else:
-        return HttpResponseBadRequest()
+        return HttpResponseBadRequest('Invalid "lang" param')
 
     return HttpResponse('Comment successfully created')
 
@@ -62,7 +62,7 @@ def create_translation(request):
 def create_comment(request):
     word, translation, lang = request.POST.get('word'), request.POST.get('translation'), request.POST.get('lang')
     if not word or not translation or not lang:
-        return HttpResponseBadRequest()
+        return HttpResponseBadRequest('Parameters "word", "translation" and "lang" not provided correctly')
 
     try:
         if lang == 'en':
@@ -70,13 +70,13 @@ def create_comment(request):
         elif lang == 'fa':
             translation = FaToEnTranslation.objects.get(word=word, translation=translation)
         else:
-            return HttpResponseBadRequest()
+            return HttpResponseBadRequest('Invalid "lang" param')
     except (EnToFaTranslation.DoesNotExist, FaToEnTranslation.DoesNotExist):
-        return HttpResponseBadRequest()
+        return HttpResponseNotFound('Translation not found')
 
     name, comment, rating = request.POST.get('name'), request.POST.get('comment'), require_POST.get('rating')
     if not name or not comment or not rating:
-        return HttpResponseBadRequest()
+        return HttpResponseBadRequest('Parameters "name", "comment" and "rating" not provided correctly')
 
     Comment.objects.create(translation=translation, submitter_name=name, comment=comment, rating=rating)
 

@@ -8,11 +8,11 @@ def _build_translation_response(translations):
     return [
         {
             'translation': t.translation,
-            'rating': t.rating,
             'comments': [
                 {
                     'comment': c.comment,
-                    'submitter_name': c.submitter_name
+                    'submitter_name': c.submitter_name,
+                    'rating': c.rating
                 }
                 for c in t.comments
             ]

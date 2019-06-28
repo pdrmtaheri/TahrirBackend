@@ -22,9 +22,9 @@ class Comment(models.Model):
 
     rating = models.PositiveSmallIntegerField()
 
-    translation_ct = models.ForeignKey(ContentType, on_delete=models.CASCADE)
-    translation_obj_id = models.PositiveIntegerField()
-    translation = GenericForeignKey('translation_ct', 'translation_obj_id')
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    object_id = models.PositiveIntegerField()
+    translation = GenericForeignKey('content_type', 'object_id')
 
 
 class FaToEnTranslation(models.Model):

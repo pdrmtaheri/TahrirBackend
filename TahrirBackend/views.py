@@ -14,7 +14,7 @@ def _build_translation_response(translations):
                     'submitter_name': c.submitter_name,
                     'rating': c.rating
                 }
-                for c in t.comments
+                for c in t.comments.all()
             ]
         }
         for t in translations

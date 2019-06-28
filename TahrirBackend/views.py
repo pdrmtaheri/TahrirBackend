@@ -53,8 +53,10 @@ def create_translation(request):
 
     submitter_name = request.POST.get('name')
     if lang == 'en':
+        word = word.lower()
         EnToFaTranslation.objects.create(word=word, translation=translation, submitter_name=submitter_name)
     elif lang == 'fa':
+        translation = translation.lower()
         FaToEnTranslation.objects.create(word=word, translation=translation, submitter_name=submitter_name)
     else:
         return HttpResponseBadRequest('Invalid "lang" param')

@@ -11,6 +11,10 @@ class PersianWord(models.Model):
 class EnglishWord(models.Model):
     word = models.CharField(max_length=50, unique=True)
 
+    def save(self, *args, **kwargs):
+        self.word = self.word.lower()
+        super(EnglishWord, self).save(*args, **kwargs)
+
 
 class Comment(models.Model):
     comment = models.TextField()

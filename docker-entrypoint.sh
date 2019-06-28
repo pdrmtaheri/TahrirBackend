@@ -1,4 +1,18 @@
 #!/usr/bin/env bash
+
+echo "Waiting for database..."
+until psql -h postgres -p 5432 -U postgres -c '\q'; do
+  >&2 echo "Postgres is unavailable - sleeping"
+  sleep 1
+done
+echo "Connected to database."
+
+python3 manage.py migrate --noinput
+if [ $? -ne 0 ]; then
+    echo "Migration failed." >&2
+    exit 1
+fi
+
 exec gunicorn --env DJANGO_SETTINGS_MODULE=TahrirBackend.settings TahrirBackend.wsgi \
     --name tahrir-gunicorn \
     --bind 0.0.0.0:5555 \

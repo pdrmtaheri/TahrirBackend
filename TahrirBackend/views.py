@@ -5,20 +5,23 @@ from TahrirBackend.models import EnToFaTranslation, FaToEnTranslation, Comment
 
 
 def _build_translation_response(translations):
-    return [
-        {
-            'translation': t.translation,
-            'comments': [
+    return {
+        'translations':
+            [
                 {
-                    'comment': c.comment,
-                    'submitter_name': c.submitter_name,
-                    'rating': c.rating
+                    'translation': t.translation.word,
+                    'comments': [
+                        {
+                            'comment': c.comment,
+                            'submitter_name': c.submitter_name,
+                            'rating': c.rating
+                        }
+                        for c in t.comments.all()
+                    ]
                 }
-                for c in t.comments.all()
+                for t in translations
             ]
-        }
-        for t in translations
-    ]
+    }
 
 
 @require_GET
